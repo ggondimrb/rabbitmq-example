@@ -1,3 +1,5 @@
+from django.contrib.auth.models import User
+
 from rest_framework.viewsets import ViewSet
 from rest_framework import status
 from rest_framework.response import Response
@@ -28,16 +30,19 @@ class TicketViewset(ViewSet):
             sector=json_data['sector'], place=json_data['place'], game__id=json_data['game'])
 
         if already_exist_ticket:
-            return Response({'error': 'O ingresso selecionado já foi vendido'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'O ingresso para o lugar selecionado já foi vendido'}, status=status.HTTP_400_BAD_REQUEST)
 
+        user = User.objects.get(id=json_data['user'])
         ticket_data = {
             "uuid": uuid.uuid4(),
-            "user_id": json_data['user'],
+            "user": user,
             "sector": json_data['sector'],
             "place": json_data['place'],
             "game_id": json_data['game']
         }
         ticket_data = Ticket.objects.create(**ticket_data)
+
+        print(ticket_data.user.email)
 
         game.amount_tickets_available -= 1
         game.save()
