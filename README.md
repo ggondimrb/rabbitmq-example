@@ -41,6 +41,8 @@ $ /.Activate
 # Go back to email_center repository
 $ py manage.py runserver 1234
 # running on port 1234
+# run the consumer
+$ py consumer.py
 ```
 
 [django]: https://www.djangoproject.com/
