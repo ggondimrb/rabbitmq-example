@@ -4,6 +4,8 @@ import pika
 import django
 import os
 
+from django.core.mail import send_mail
+
 
 # Your path to settings.py file
 # path.append('C:/gostack/rabbitmq-example/likes/settings.py')
@@ -21,12 +23,20 @@ def callback(ch, method, properties, body):
     print("Received in tickets...")
     data = json.loads(body)
 
-    if properties.content_type == 'ticket_created':
-        subject = f"Ticket comprado por {data['user']}"
+    if properties.content_type == 'ticket_created':       
+        user_email = data['user']['email'] 
+        subject = f"Ticket comprado por {data['user']['username']} - {data['user']['email']}"
         data = f"Olá, seu ticket par o jogo {data['game']['name']} já está disponível. Segue código de acesso: {data['uuid']} / Setor: {data['sector']} / Lugar: {data['place']}."
         quote = Email.objects.create(subject=subject, body=data)
         quote.save()
-        print("email sended")
+
+        send_mail(
+            subject,
+            data,
+            'ticketsnow@teste.com',
+            [user_email],
+            fail_silently=False,
+        )
 
 
 channel.basic_consume(
