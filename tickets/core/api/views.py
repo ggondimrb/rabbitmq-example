@@ -42,8 +42,6 @@ class TicketViewset(ViewSet):
         }
         ticket_data = Ticket.objects.create(**ticket_data)
 
-        print(ticket_data.user.email)
-
         game.amount_tickets_available -= 1
         game.save()
         serializer = TicketModelSerializer(ticket_data)
